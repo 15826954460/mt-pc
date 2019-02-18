@@ -6,7 +6,7 @@ const { Nuxt, Builder } = require("nuxt"); // 引用 nuxt 模块
 
 const mongoose = require("mongoose");
 const bodyParser = require("koa-bodyparser"); // 处理post相关的请求
-const session = require("koa-generic-session"); // 处理session相关的数据
+const session = require("koa-generic-session"); // 处理session相关的数据结合 koa-redis 来使用
 const Redis = require("koa-redis"); // 引用redis
 const json = require("koa-json"); // 处理服务端像客户端返回的json格式化
 const dbConfig = require("./dbs/config"); // 引用数据库相关配置
@@ -43,7 +43,7 @@ app.use(json());
 // 连接数据库
 mongoose.connect(dbConfig.dbs, {
   useNewUrlParser: true
-}); // 连接数据库
+});
 
 // 出口登陆相关的session
 app.use(passport.initialize());
@@ -68,7 +68,7 @@ async function start() {
 
   /*****************  以下部分为代注释代码  ***************/
 
-  app.use(users.routes()).use(users.allowedMethods()); // 引用路由
+  app.use(users.routes()).use(users.allowedMethods()); // 引用用户模块路由
   // app.use(geo.routes()).use(geo.allowedMethods());
   // app.use(search.routes()).use(search.allowedMethods());
 

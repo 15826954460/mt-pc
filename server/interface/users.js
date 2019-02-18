@@ -20,7 +20,7 @@ router.post("/signup", async ctx => {
     * post ctx.request.body
     * get  ctx.request.url
     */  
-  const { username, password, email, code } = ctx.request.body;
+  const { username, password, email, code } = ctx.request.body; // 获取请求信息
 
   if (code) {
     // 获取验证码
@@ -132,6 +132,7 @@ router.get("/fix", async ctx => {
 router.post("/verify", async (ctx, next) => {
   let username = ctx.request.body.username;
   const saveExpire = await Store.hget(`nodemail:${username}`, "expire");
+  console.log(111111111, saveExpire)
   if (saveExpire && new Date().getTime() - saveExpire < 0) {
     ctx.body = {
       code: -1,
@@ -169,6 +170,7 @@ router.post("/verify", async (ctx, next) => {
     if (err) {
       return console.log(err);
     } else {
+      // 如果发送成功，将数据存储起来
       Store.hmset(`nodemail:${ko.user}`, "code", ko.code, "expire", ko.expire, "email", ko.email);
     }
   });

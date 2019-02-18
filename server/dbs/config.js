@@ -3,7 +3,7 @@ const Email = {
   redis: {
     // 设置ip
     get host() {
-      return "127.0.0.1";
+      return "127.0.0.1"; // 设置redis默认的域名
     },
     // 设置端口号
     get port() {
@@ -37,7 +37,9 @@ const Email = {
         return parseInt(new Date().getTime()) + 60 * 1000;
       };
     }
-  }
+  },
+  sign: "a3c9fe0782107295ee9f1709edd15218",
+  requestUrl: "http://cp-tools.cn"
 };
 module.exports = Email;
 // 624793604@qq.com
