@@ -5,6 +5,8 @@
 ## Build Setup
 
 ``` bash
+$ clone https://github.com/15826954460/mt-pc.git
+# clone 项目
 
 $ cd project
 # install dependencies
