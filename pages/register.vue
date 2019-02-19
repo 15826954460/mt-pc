@@ -114,17 +114,14 @@ export default {
     // 发送验证码
     sendMsg() {
       let namePass, emailPass;
-      if (this.timerid) {
-        return false;
-      }
+      if (this.timerid) return;
       this.$refs["ruleForm"].validateField("name", valid => {
         namePass = valid;
       });
       this.statusMsg = "";
       // 如果用户名都没有校验成功，就不在进行下面的校验
-      if (namePass) {
-        return false;
-      }
+      if (namePass) return;
+
       this.$refs["ruleForm"].validateField("email", valid => {
         emailPass = valid;
       });
@@ -154,7 +151,7 @@ export default {
     },
     // 同意注册协议
     register() {
-      let self = this
+      let self = this;
       this.$refs["ruleForm"].validate(valid => {
         if (valid) {
           axios

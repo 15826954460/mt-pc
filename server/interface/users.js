@@ -16,17 +16,17 @@ let Store = new Redis().client; // 获取redis静态资源
  * -----注册接口-----
  */
 router.post("/signup", async ctx => {
-   /** 获取请求参数
-    * post ctx.request.body
-    * get  ctx.request.url
-    */  
+  /** 获取请求参数
+   * post ctx.request.body
+   * get  ctx.request.url
+   */
   const { username, password, email, code } = ctx.request.body; // 获取请求信息
 
   if (code) {
     // 获取验证码
     const saveCode = await Store.hget(`nodemail:${username}`, "code");
     // 获取过期时间
-    const saveExpire = await Store.hget(`nodemail:${username}`, "expire"); 
+    const saveExpire = await Store.hget(`nodemail:${username}`, "expire");
     if (code === saveCode) {
       // 验证码对比
       if (new Date().getTime() - saveExpire > 0) {
@@ -132,7 +132,6 @@ router.get("/fix", async ctx => {
 router.post("/verify", async (ctx, next) => {
   let username = ctx.request.body.username;
   const saveExpire = await Store.hget(`nodemail:${username}`, "expire");
-  console.log(111111111, saveExpire)
   if (saveExpire && new Date().getTime() - saveExpire < 0) {
     ctx.body = {
       code: -1,
