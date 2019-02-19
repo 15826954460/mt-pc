@@ -12,6 +12,7 @@ const json = require("koa-json"); // 处理服务端像客户端返回的json格
 const dbConfig = require("./dbs/config"); // 引用数据库相关配置
 const passport = require("./interface/utils/passport");
 const users = require("./interface/users"); // 引用模块的路由
+const persons = require("./interface/person");
 const geo = require("./interface/geo");
 const search = require("./interface/search");
 
@@ -67,8 +68,10 @@ async function start() {
   }
 
   /*****************  以下部分为代注释代码  ***************/
+  app.use(users.routes()).use(users.allowedMethods());
 
-  app.use(users.routes()).use(users.allowedMethods()); // 引用用户模块路由
+  // 引用用户模块路由
+  app.use(persons.routes()).use(persons.allowedMethods());
   // app.use(geo.routes()).use(geo.allowedMethods());
   // app.use(search.routes()).use(search.allowedMethods());
 

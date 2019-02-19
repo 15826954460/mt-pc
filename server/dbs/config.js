@@ -1,5 +1,6 @@
 const Email = {
-  dbs: "mongodb://127.0.0.1:27017/student", // 连接本地数据库 student
+  // 连接本地数据库 student
+  dbs: "mongodb://127.0.0.1:27017/student",
   redis: {
     // 设置ip
     get host() {

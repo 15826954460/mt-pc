@@ -20,7 +20,7 @@ router.post("/signup", async ctx => {
    * post ctx.request.body
    * get  ctx.request.url
    */
-  const { username, password, email, code } = ctx.request.body; // 获取请求信息
+  const { username, password, email, code } = ctx.request.body;
 
   if (code) {
     // 获取验证码
@@ -50,7 +50,7 @@ router.post("/signup", async ctx => {
     };
   }
 
-  // 用户名是否已经存在
+  // 从数据库中进行查找用户名，用来判断数据是否已经存在
   let user = await User.find({
     username
   });
@@ -61,12 +61,13 @@ router.post("/signup", async ctx => {
     };
     return;
   }
-  // 创建用户名
+  // 创建用户名(User.create是mongoose数据表中自带的方法)
   let nuser = await User.create({
     username,
     password,
     email
   });
+
   if (nuser) {
     let res = await axios.post("/users/signin", {
       username,

@@ -1,7 +1,6 @@
 ### Learn goals
 
-
-## Build Setup[项目运行步骤]
+### Build Setup[项目运行步骤]
 
 ``` bash
 # clone 项目
@@ -24,7 +23,7 @@ $ yarn run generate
 
 ```
 
-#### 技术栈
+### 技术栈
 Nuxt.js + Nodejs + Vue + Vuex + MongoDB + Redis + axios + ElementUI
 
 #### The directory structure (项目目录结构简单描述)
@@ -50,9 +49,12 @@ Nuxt.js + Nodejs + Vue + Vuex + MongoDB + Redis + axios + ElementUI
 
 
 ##### 关于一些坑的解决
-
 - 如果提示 session store is unavaliable，退出服务，先运行redis 和 mongoed, 再次运行项目
-
 
 ##### 关于一些第三方库的文档以及使用说明
 > nodemailer 主要用来邮件发送的第三方库，[参考文档](https://nodemailer.com/about/)
+
+##### 关于mongoDB的和Robo 3T 的安装
+> [MongoDB 安装和使用](https://blog.csdn.net/woleigequshawanyier/article/details/86506728)
+
+> [Robo 3T安装和使用](https://blog.csdn.net/woleigequshawanyier/article/details/86508960)

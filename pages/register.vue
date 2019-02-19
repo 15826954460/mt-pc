@@ -156,22 +156,27 @@ export default {
         if (valid) {
           axios
             .post("/users/signup", {
+              // 用户名进行编码
               username: window.encodeURIComponent(self.ruleForm.name),
-              password: CryptoJs.MD5(self.ruleForm.pwd).toString(), // 使用MD5加密
+              // 使用MD5加密
+              password: CryptoJs.MD5(self.ruleForm.pwd).toString(),
               email: self.ruleForm.email,
               code: self.ruleForm.code
             })
             .then(({ status, data }) => {
+              // http 的请求返回的成功
               if (status === 200) {
+                // 接口返回的成功处理的状态码
                 if (data && data.code === 0) {
                   location.href = "/login";
                 } else {
+                  // 显示错误提示信息
                   self.error = data.msg;
                 }
               } else {
                 self.error = `服务器出错，错误码:${status}`;
               }
-              // 一段时间之后自动清空提示内容
+              // 一段时间之后自动清空提示内容，防止用户修改之后再次输入时，错误提示仍然存在的bug
               let _timer = setTimeout(() => {
                 clearTimeout(_timer);
                 _timer = null;

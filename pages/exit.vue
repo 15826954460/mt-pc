@@ -6,7 +6,7 @@
 const axios = require("../server/interface/utils/axios");
 export default {
   layout: 'blank',
-  // 关于middleware的工作流，参考nuxt.js
+  // 关于middleware的工作流，参考 https://zh.nuxtjs.org/guide
   middleware: async (ctx)=>{
     let {status, data} = await axios.get("/users/exit")
     if(status === 200 && data && data.code === 0) {
