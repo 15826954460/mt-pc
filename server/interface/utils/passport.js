@@ -1,13 +1,15 @@
+// 验证权限的类库
 const passport = require("koa-passport")
-const LocalStrategy = require("passport-local") // 引用第三方更强大本地数据存储
-const UserModel = require("../../dbs/models/users") // 引入mongodb模块
+//
+const LocalStrategy = require("passport-local")
+// 引入mongodb模块
+const UserModel = require("../../dbs/models/users")
 
 passport.use(new LocalStrategy(async function(username,password,done){
-  let where = {
-    username
-  };
-  let result = await UserModel.findOne(where) // 查询用户名
-  if(result != null){
+  let result = await UserModel.findOne({username}) // 查询用户名
+  // 查询用户
+  if(result !== null){
+    // 检验密码
     if(result.password === password) {
       return done(null, result)
     } else {

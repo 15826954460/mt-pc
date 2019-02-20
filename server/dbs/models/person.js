@@ -14,5 +14,5 @@ var personSchema = new Schema({
   }
 });
 
-// compile our model
+// 注册一个测试表
 module.exports = mongoose.model('Person', personSchema);

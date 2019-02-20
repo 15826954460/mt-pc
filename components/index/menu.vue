@@ -2,14 +2,14 @@
   <div class="m-menu">
     <dl class="nav" @mouseleave="mouseleave">
       <dt>全部分类</dt>
-      <dd v-for="(item, index) in menu" :key="index" @mouseenter="enter">
+      <dd v-for="(item, index) in menu" :key="index" @mouseenter="mouseenter">
         <i :class="item.type"/>
         {{ item.name }}
         <span class="arrow"/>
       </dd>
     </dl>
 
-    <div v-if="kind" class="detail" @mouseenter="sover" @mouseleave="sout">
+    <div v-if="kind" class="detail" @mouseenter="menudetailenter" @mouseleave="menudetailleave">
       <template v-for="(item, index) in curdetail.child">
         <h4 :key="index">{{ item.title }}</h4>
         <span v-for="v in item.child" :key="v">{{ v }}</span>
@@ -57,6 +57,7 @@ export default {
     };
   },
   computed: {
+    // 动态获取当前的menu
     curdetail() {
       return this.menu.filter(item => {
         return item.type === this.kind;
@@ -64,20 +65,24 @@ export default {
     }
   },
   methods: {
+    // 左边菜单鼠标离开事件，延迟是为了鼠标移入菜单详情列表的时候不用将kind置为空
     mouseleave() {
       this._timer = setTimeout(() => {
         this.kind = "";
         clearTimeout(this._timer);
       }, 150);
     },
-    enter(e) {
+    // 鼠标进入菜单的时候获取当前菜单的类型
+    mouseenter(e) {
       this.kind = e.target.querySelector("i").className; // 获取class也就是type
     },
-    sover() {
-      // 通过清楚定时器的方法来判断是否取消右边内容的显示
+    // 鼠标进入菜单详情
+    menudetailenter() {
+      // 通过清除定时器的方法来判断是否取消右边内容的显示
       clearTimeout(this._timer);
     },
-    sout() {
+    // 鼠标离开菜单详情
+    menudetailleave() {
       this.kind = "";
     }
   }

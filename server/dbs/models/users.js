@@ -16,5 +16,5 @@ const UserSchema = new Schema({
     require: true
   }
 });
-// 生成一个用户表
+// 生成一个用户的注册表
 module.exports = mongoose.model("User", UserSchema);

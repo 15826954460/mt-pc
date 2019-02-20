@@ -78,7 +78,6 @@
 
 <script>
 import _ from "lodash";
-import { clearTimeout } from 'timers';
 export default {
   data() {
     return {

@@ -6,15 +6,15 @@ const Passport = require("./utils/passport");
 const Email = require("../dbs/config");
 const axios = require("./utils/axios");
 
+// 创建一个路由对象
 let router = new Router({
   prefix: "/users" // 添加路由访问前缀
 });
 
-let Store = new Redis().client; // 获取redis静态资源
+// 声明一个对象，获取redis静态资源
+let Store = new Redis().client;
 
-/**
- * -----注册接口-----
- */
+/** -----注册接口----- */
 router.post("/signup", async ctx => {
   /** 获取请求参数
    * post ctx.request.body
@@ -23,14 +23,14 @@ router.post("/signup", async ctx => {
   const { username, password, email, code } = ctx.request.body;
 
   if (code) {
-    // 获取验证码
+    // 获取验证码 nodemail 属于约定方式，如何存就如何取
     const saveCode = await Store.hget(`nodemail:${username}`, "code");
     // 获取过期时间
     const saveExpire = await Store.hget(`nodemail:${username}`, "expire");
+    // 验证码对比
     if (code === saveCode) {
-      // 验证码对比
+      // 判断是否过期
       if (new Date().getTime() - saveExpire > 0) {
-        // 判断是否过期
         ctx.body = {
           code: -1,
           msg: "验证吗已过期，请重新尝试"
@@ -54,6 +54,7 @@ router.post("/signup", async ctx => {
   let user = await User.find({
     username
   });
+
   if (user.length) {
     ctx.body = {
       code: -1,
@@ -61,6 +62,7 @@ router.post("/signup", async ctx => {
     };
     return;
   }
+  
   // 创建用户名(User.create是mongoose数据表中自带的方法)
   let nuser = await User.create({
     username,
@@ -92,9 +94,7 @@ router.post("/signup", async ctx => {
     };
   }
 });
-/**
- * -----登录接口-----
- */
+/** -----登录接口----- */
 router.post("/signin", async (ctx, next) => {
   return Passport.authenticate("local", function(err, user, info, status) {
     if (err) {
@@ -151,6 +151,7 @@ router.post("/verify", async (ctx, next) => {
       pass: Email.smtp.pass
     }
   });
+
   // 接收信息
   let ko = {
     code: Email.smtp.code(),
@@ -158,6 +159,7 @@ router.post("/verify", async (ctx, next) => {
     email: ctx.request.body.email,
     user: ctx.request.body.username
   };
+
   // 邮件中显示的内容
   let mailOptions = {
     from: `认证邮件<${Email.smtp.user}>`,
@@ -165,6 +167,7 @@ router.post("/verify", async (ctx, next) => {
     subject: "《慕课网高仿美团网全栈实战》注册码", // 邮件主题
     html: `您在《慕课网高仿美团网全栈实战》课程中注册，您的邀请码是${ko.code}` // 邮件内容
   };
+
   // 发送邮件
   await transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
