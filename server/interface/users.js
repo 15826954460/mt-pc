@@ -6,14 +6,16 @@ const Passport = require("./utils/passport");
 const Email = require("../dbs/config");
 const axios = require("./utils/axios");
 
+// 实例化一个user对象
 let router = new Router({
   prefix: "/users" // 添加路由访问前缀
 });
 
-let Store = new Redis().client; // 获取redis静态资源
+let Store = new Redis().client; // 获取redis客户端
 
 /** -----登录接口----- */
 router.post("/signin", async (ctx, next) => {
+  // 验证本地的登陆信息
   return Passport.authenticate("local", function(err, user, info, status) {
     if (err) {
       ctx.body = {
@@ -27,7 +29,7 @@ router.post("/signin", async (ctx, next) => {
           msg: "登录成功",
           user
         };
-        return ctx.login(user); // 执行登录的动作
+        // return ctx.login(user); // 执行登录的动作
       } else {
         ctx.body = {
           code: 1, // 异常
@@ -43,6 +45,14 @@ router.post("/verify", async (ctx, next) => {
   let username = ctx.request.body.username;
   let saveExpire = await Store.hget(`nodemail:${username}`, "expire");
 
+  // 验证限制
+  if (saveExpire && parseInt(new Date().getTime()) - parseInt(saveExpire) < 0) {
+    ctx.body = {
+      code: -2,
+      limitmsg: "验证请求过于频繁，1分钟内1次"
+    };
+  }
+
   // 接收信息
   let ko = {
     code: Email.smtp.code(),
@@ -51,64 +61,36 @@ router.post("/verify", async (ctx, next) => {
     user: ctx.request.body.username
   };
 
-  // 判断用户名是否已经存在
-  let user = await User.find({
-    username
+  // 发送对象
+  let transporter = nodeMailer.createTransport({
+    host: Email.smtp.host,
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: Email.smtp.user,
+      pass: Email.smtp.pass
+    }
   });
 
-  // 用户名存在停止继续操作
-  if (user.length) {
-    ctx.body = {
-      code: -1,
-      msg: "用户名已被注册,请重新输入"
-    };
-    return;
-  }
+  // 邮件中显示的内容
+  let mailOptions = {
+    from: `认证邮件<${Email.smtp.user}>`,
+    to: ko.email,
+    subject: "《慕课网高仿美团网全栈实战》注册码", // 邮件主题
+    html: `您在《慕课网高仿美团网全栈实战》课程中注册，您的邀请码是${ko.code}` // 邮件内容
+  };
 
-  // 用户名不存在，判断是否已经提交错发送验证码，如果没有
-  if (!saveExpire && !user.length) {
-    // 没有缓存时间限制，就先存入一个时间限制
-    Store.hmset(`nodemail:${ko.user}`, "code", ko.code, "expire", ko.expire, "email", ko.email);
-
-    // 发送对象
-    let transporter = nodeMailer.createTransport({
-      host: Email.smtp.host,
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: Email.smtp.user,
-        pass: Email.smtp.pass
-      }
-    });
-
-    // 邮件中显示的内容
-    let mailOptions = {
-      from: `认证邮件<${Email.smtp.user}>`,
-      to: ko.email,
-      subject: "《慕课网高仿美团网全栈实战》注册码", // 邮件主题
-      html: `您在《慕课网高仿美团网全栈实战》课程中注册，您的邀请码是${ko.code}` // 邮件内容
-    };
-
-    // 发送邮件
-    await transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        return console.log(err);
-      }
-    });
-
-    // 响应主体内容
-    ctx.body = {
-      code: 0
-    };
-  } else {
-    // 验证限制
-    if (saveExpire && parseInt(new Date().getTime()) - parseInt(saveExpire) < 0) {
-      ctx.body = {
-        code: -2,
-        limitmsg: "验证请求过于频繁，1分钟内1次"
-      };
+  // 发送邮件
+  await transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      return console.log(err);
     }
-  }
+  });
+
+  // 响应主体内容
+  ctx.body = {
+    code: 0
+  };
 });
 
 /**  -----注册接口----- */
@@ -126,7 +108,7 @@ router.post("/signup", async (ctx, next) => {
     const saveExpire = await Store.hget(`nodemail:${username}`, "expire");
     if (code === saveCode) {
       // 验证码对比
-      if (new Date().getTime() - saveExpire > 0) {
+      if (new Date().getTime() - parseInt(saveExpire) > 0) {
         // 判断是否过期
         ctx.body = {
           code: -1,
@@ -179,9 +161,6 @@ router.post("/signup", async (ctx, next) => {
         msg: "注册成功",
         user: res.data.user
       };
-      // 注册成功之后清除session
-      Store.hdel(`nodemail:${ko.user}`, "code", ko.code, "expire", ko.expire, "email", ko.email);
-
     } else {
       ctx.body = {
         code: -1,
@@ -196,11 +175,10 @@ router.post("/signup", async (ctx, next) => {
   }
 });
 
-
 /** 退出登录 */
 router.get("/exit", async (ctx, next) => {
-  await ctx.logout();
-  // 是否注销操作
+  await ctx.logout(); // 执行退出动作
+  // 是否注销操作  ctx.isAuthenticated  passport 提供的 api
   if (!ctx.isAuthenticated()) {
     ctx.body = {
       code: 0 // 使用0来代表请求接口成功
@@ -211,18 +189,19 @@ router.get("/exit", async (ctx, next) => {
     };
   }
 });
+
 /** ----获取用户信息---- */
 router.get("/getUser", async ctx => {
   // 判断是否登录状态
   if (ctx.isAuthenticated()) {
     const { username, email } = ctx.session.passport.user;
     ctx.body = {
-      user: username,
+      username: username,
       email
     };
   } else {
     ctx.body = {
-      user: "",
+      username: "",
       email: ""
     };
   }

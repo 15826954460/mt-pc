@@ -5,7 +5,7 @@ const { Nuxt, Builder } = require("nuxt"); // 引用 nuxt 模块
 /**************  以下部分为引入第三方包  ************/
 
 const mongoose = require("mongoose");
-const bodyParser = require("koa-bodyparser"); // 处理post相关的请求
+const bodyParser = require("koa-bodyparser"); // 处理post相关的请求,方便获取请求参数
 const session = require("koa-generic-session"); // 处理session相关的数据结合 koa-redis 来使用
 const Redis = require("koa-redis"); // 引用redis
 const json = require("koa-json"); // 处理服务端像客户端返回的json格式化
@@ -21,10 +21,10 @@ const search = require("./interface/search");
 const app = new Koa();
 
 /*****************  以下部分为代解读代码  ***************/
-app.keys = ["mt", "keyskeys"];
+app.keys = ["mt", "keyskeys"]; // cookie 设置秘钥
 app.proxy = true;
 
-// 和session相关的处理
+// 将鉴权后的用户身份保存在cookie中
 app.use(
   session({
     key: "mt",
@@ -46,9 +46,9 @@ mongoose.connect(dbConfig.dbs, {
   useNewUrlParser: true
 });
 
-// 出口登陆相关的session
-app.use(passport.initialize());
-app.use(passport.session());
+// 开启koa-passport对session的支持
+app.use(passport.initialize()); // initialzie()函数的作用是只是简单为当前context添加passport字段，便于后面的使用
+app.use(passport.session()); // 则是passport自带的策略，用于从session中提取用户信息
 
 // Import and Set Nuxt.js options
 let config = require("../nuxt.config.js");
@@ -67,16 +67,18 @@ async function start() {
     await builder.build();
   }
 
+
+
   /*****************  以下部分为代注释代码  ***************/
   app.use(users.routes()).use(users.allowedMethods());
 
   // 引用用户模块路由
   app.use(persons.routes()).use(persons.allowedMethods());
-  // app.use(geo.routes()).use(geo.allowedMethods());
+  app.use(geo.routes()).use(geo.allowedMethods());
   // app.use(search.routes()).use(search.allowedMethods());
 
   /***************  以上部分为注释代码  ***************/
-
+  // 路由必须放在该部分之前
   app.use(ctx => {
     ctx.status = 200;
     ctx.respond = false; // Bypass Koa's built-in response handling

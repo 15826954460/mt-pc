@@ -199,6 +199,31 @@ export default {
     }
   }
 };
+
+// const ctx = {
+//   request: {
+//     method: "POST",
+//     url: "/users/signin",
+//     header: {
+//       host: "localhost:3000",
+//       "user-agent": "curl/7.54.0",
+//       accept: "*/*",
+//       "content-length": "0",
+//       "content-type": "application/x-www-form-urlencoded"
+//     }
+//   },
+//   response: {
+//     status: 404,
+//     message: "Not Found",
+//     header: "[Object: null prototype] {}"
+//   },
+//   app: { subdomainOffset: 2, proxy: true, env: "development" },
+//   originalUrl: "/users/signin",
+//   req: "<original node req>",
+//   res: "<original node res>",
+//   socket: "<original node socket>"
+// };
+
 </script>
 <style lang="scss">
 @import "@/assets/css/register/index.scss";

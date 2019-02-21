@@ -77,6 +77,7 @@ router.post('/removePerson', async function(ctx) {
 
 
 /** 
+ * 建议使用 postman 进行模拟请求接口，使用方法自行百度
  * curl 为 shall 命令, 可以直接在命令行中请求接口
  * -d 为 post 请求
  * "name=lilei&age=22" 为请求参数

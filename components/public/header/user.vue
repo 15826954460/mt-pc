@@ -1,7 +1,7 @@
 <template>
   <div class="m-user">
-    <template v-if="user">欢迎您，
-      <span class="username">{{ user }}</span>
+    <template v-if="username">欢迎您，
+      <span class="username">{{ username }}</span>
       <nuxt-link to="/exit">[退出]</nuxt-link>
     </template>
     <template v-else>
@@ -16,14 +16,14 @@ const axios = require("../../../server/interface/utils/axios");
 export default {
   data() {
     return {
-      user: ""
+      username: ""
     };
   },
   // 异步获取，用户登陆之后的信息
   async mounted() {
-    const {status, data:{ user }} = await axios.get('/users/getUser');
+    const {status, data:{ username }} = await axios.get('/users/getUser');
     if(status === 200) {
-      this.user = user;
+      this.username = username;
     }
   }
 };

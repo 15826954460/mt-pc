@@ -15,6 +15,6 @@ const UserSchema = new Schema({
     type: String,
     require: true
   }
-});
+}, { collection: 'users' });
 // 生成一个用户表
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("users", UserSchema);

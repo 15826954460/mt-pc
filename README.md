@@ -57,4 +57,6 @@ Nuxt.js + Nodejs + Vue + Vuex + MongoDB + Redis + axios + ElementUI
 ##### 关于mongoDB的和Robo 3T 的安装
 > [MongoDB 安装和使用](https://blog.csdn.net/woleigequshawanyier/article/details/86506728)
 
+> [mongoDB导入数据](https://segmentfault.com/a/1190000006236494)
+
 > [Robo 3T安装和使用](https://blog.csdn.net/woleigequshawanyier/article/details/86508960)

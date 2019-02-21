@@ -1,5 +1,5 @@
 {
-  "name": "mt-app",
+  "name": "mt-pc",
   "version": "1.0.0",
   "description": "My awe-inspiring Nuxt.js project",
   "author": "baiyunsong",
@@ -14,6 +14,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
     "cross-env": "^5.2.0",
     "crypto-js": "^3.1.9-1",
     "element-ui": "^2.4.11",
