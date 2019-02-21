@@ -26,6 +26,7 @@
           <el-input v-model="ruleForm.email"/>
           <el-button size="mini" round @click="sendMsg">发送验证码</el-button>
           <span class="status">{{ statusMsg }}</span>
+          <span class="red">{{limitmsg}}</span>
         </el-form-item>
         <el-form-item label="验证码" prop="code">
           <el-input v-model="ruleForm.code" maxlength="4"/>
@@ -49,6 +50,7 @@
 </template>
 <script>
 import CryptoJs from "crypto-js";
+import { setTimeout, clearTimeout } from "timers";
 const axios = require("../server/interface/utils/axios");
 export default {
   layout: "blank",
@@ -56,6 +58,7 @@ export default {
     return {
       timerid: null, // 判断定时器是否结束
       statusMsg: "",
+      limitmsg: "",
       error: "",
       ruleForm: {
         name: "",
@@ -143,8 +146,16 @@ export default {
                   this.statusMsg = "";
                 }
               }, 1000);
-            } else {
+            } else if (data.code === -1) {
+              clearInterval(this.timerid);
               this.statusMsg = data.msg;
+            } else if (data.code === -2) {
+              this.limitmsg = data.limitmsg;
+              let _timer = setTimeout(() => {
+                this.limitmsg = "";
+                clearTimeout(_timer);
+                _timer = null;
+              }, 1000);
             }
           });
       }
@@ -191,4 +202,7 @@ export default {
 </script>
 <style lang="scss">
 @import "@/assets/css/register/index.scss";
+.red {
+  color: red;
+}
 </style>

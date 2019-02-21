@@ -12,10 +12,107 @@ let router = new Router({
 
 let Store = new Redis().client; // 获取redis静态资源
 
-/**
- * -----注册接口-----
- */
-router.post("/signup", async ctx => {
+/** -----登录接口----- */
+router.post("/signin", async (ctx, next) => {
+  return Passport.authenticate("local", function(err, user, info, status) {
+    if (err) {
+      ctx.body = {
+        code: -1,
+        msg: err
+      };
+    } else {
+      if (user) {
+        ctx.body = {
+          code: 0,
+          msg: "登录成功",
+          user
+        };
+        return ctx.login(user); // 执行登录的动作
+      } else {
+        ctx.body = {
+          code: 1, // 异常
+          msg: info
+        };
+      }
+    }
+  })(ctx, next); // 传入上下文
+});
+
+/** -----发送验证码接口----- */
+router.post("/verify", async (ctx, next) => {
+  let username = ctx.request.body.username;
+  let saveExpire = await Store.hget(`nodemail:${username}`, "expire");
+
+  // 接收信息
+  let ko = {
+    code: Email.smtp.code(),
+    expire: Email.smtp.expire(),
+    email: ctx.request.body.email,
+    user: ctx.request.body.username
+  };
+
+  // 判断用户名是否已经存在
+  let user = await User.find({
+    username
+  });
+
+  // 用户名存在停止继续操作
+  if (user.length) {
+    ctx.body = {
+      code: -1,
+      msg: "用户名已被注册,请重新输入"
+    };
+    return;
+  }
+
+  // 用户名不存在，判断是否已经提交错发送验证码，如果没有
+  if (!saveExpire && !user.length) {
+    // 没有缓存时间限制，就先存入一个时间限制
+    Store.hmset(`nodemail:${ko.user}`, "code", ko.code, "expire", ko.expire, "email", ko.email);
+
+    // 发送对象
+    let transporter = nodeMailer.createTransport({
+      host: Email.smtp.host,
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: Email.smtp.user,
+        pass: Email.smtp.pass
+      }
+    });
+
+    // 邮件中显示的内容
+    let mailOptions = {
+      from: `认证邮件<${Email.smtp.user}>`,
+      to: ko.email,
+      subject: "《慕课网高仿美团网全栈实战》注册码", // 邮件主题
+      html: `您在《慕课网高仿美团网全栈实战》课程中注册，您的邀请码是${ko.code}` // 邮件内容
+    };
+
+    // 发送邮件
+    await transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        return console.log(err);
+      }
+    });
+
+    // 响应主体内容
+    ctx.body = {
+      code: 0
+    };
+  } else {
+    // 验证限制
+    if (saveExpire && parseInt(new Date().getTime()) - parseInt(saveExpire) < 0) {
+      ctx.body = {
+        code: -2,
+        limitmsg: "验证请求过于频繁，1分钟内1次"
+      };
+    }
+  }
+});
+
+/**  -----注册接口----- */
+router.post("/signup", async (ctx, next) => {
   /** 获取请求参数
    * post ctx.request.body
    * get  ctx.request.url
@@ -54,6 +151,7 @@ router.post("/signup", async ctx => {
   let user = await User.find({
     username
   });
+
   if (user.length) {
     ctx.body = {
       code: -1,
@@ -61,13 +159,15 @@ router.post("/signup", async ctx => {
     };
     return;
   }
-  // 创建用户名(User.create是mongoose数据表中自带的方法)
+
+  // 创建用户名(User.create是mongoose数据表中自带的方法),将数据写入数据库
   let nuser = await User.create({
     username,
     password,
     email
   });
 
+  // 注册成功之后，直接登录操作
   if (nuser) {
     let res = await axios.post("/users/signin", {
       username,
@@ -79,6 +179,9 @@ router.post("/signup", async ctx => {
         msg: "注册成功",
         user: res.data.user
       };
+      // 注册成功之后清除session
+      Store.hdel(`nodemail:${ko.user}`, "code", ko.code, "expire", ko.expire, "email", ko.email);
+
     } else {
       ctx.body = {
         code: -1,
@@ -92,97 +195,9 @@ router.post("/signup", async ctx => {
     };
   }
 });
-/**
- * -----登录接口-----
- */
-router.post("/signin", async (ctx, next) => {
-  return Passport.authenticate("local", function(err, user, info, status) {
-    if (err) {
-      ctx.body = {
-        code: -1,
-        msg: err
-      };
-    } else {
-      if (user) {
-        ctx.body = {
-          code: 0,
-          msg: "登录成功",
-          user
-        };
-        return ctx.login(user);
-      } else {
-        ctx.body = {
-          code: 1,
-          msg: info
-        };
-      }
-    }
-  })(ctx, next);
-});
 
-router.get("/fix", async ctx => {
-  //Store.hset(`test`, "name", "111");
-  ctx.session.name = "nidie";
-  ctx.body = {
-    code: 0
-  };
-});
-/**
- * -----邮箱发送接口-----
- */
-router.post("/verify", async (ctx, next) => {
-  let username = ctx.request.body.username;
-  const saveExpire = await Store.hget(`nodemail:${username}`, "expire");
-  if (saveExpire && new Date().getTime() - saveExpire < 0) {
-    ctx.body = {
-      code: -1,
-      msg: "验证请求过于频繁，1分钟内1次"
-    };
-    return false;
-  }
 
-  // 发送对象
-  let transporter = nodeMailer.createTransport({
-    host: Email.smtp.host,
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: Email.smtp.user,
-      pass: Email.smtp.pass
-    }
-  });
-  // 接收信息
-  let ko = {
-    code: Email.smtp.code(),
-    expire: Email.smtp.expire(),
-    email: ctx.request.body.email,
-    user: ctx.request.body.username
-  };
-  // 邮件中显示的内容
-  let mailOptions = {
-    from: `认证邮件<${Email.smtp.user}>`,
-    to: ko.email,
-    subject: "《慕课网高仿美团网全栈实战》注册码", // 邮件主题
-    html: `您在《慕课网高仿美团网全栈实战》课程中注册，您的邀请码是${ko.code}` // 邮件内容
-  };
-  // 发送邮件
-  await transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      return console.log(err);
-    } else {
-      // 如果发送成功，将数据存储起来
-      Store.hmset(`nodemail:${ko.user}`, "code", ko.code, "expire", ko.expire, "email", ko.email);
-    }
-  });
-  // 响应主体内容
-  ctx.body = {
-    code: 0,
-    msg: "验证码已经发送，可能会有延时，有效期1分钟"
-  };
-});
-/**
- * 退出登录
- */
+/** 退出登录 */
 router.get("/exit", async (ctx, next) => {
   await ctx.logout();
   // 是否注销操作
@@ -196,9 +211,7 @@ router.get("/exit", async (ctx, next) => {
     };
   }
 });
-/**
- * 获取用户信息
- */
+/** ----获取用户信息---- */
 router.get("/getUser", async ctx => {
   // 判断是否登录状态
   if (ctx.isAuthenticated()) {

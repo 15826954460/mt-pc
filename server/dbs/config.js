@@ -35,12 +35,12 @@ const Email = {
     // 设置60秒有效时间
     get expire() {
       return () => {
-        return parseInt(new Date().getTime()) + 60 * 1000;
+        return parseInt(new Date().getTime()) + 60 * 1000 * 3; // 这里将时间设置成3分钟，方便调试，实际开发中根据实际情况进行设置
       };
     }
   },
-  sign: "a3c9fe0782107295ee9f1709edd15218",
-  requestUrl: "http://cp-tools.cn"
+  // sign: "a3c9fe0782107295ee9f1709edd15218",
+  // requestUrl: "http://cp-tools.cn"
 };
 module.exports = Email;
 // 624793604@qq.com
