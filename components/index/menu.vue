@@ -18,45 +18,50 @@
   </div>
 </template>
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapState } = createNamespacedHelpers("home");
 export default {
   data() {
     return {
       kind: "", // 类型
-      menu: [
-        {
-          type: "food",
-          name: "美食",
-          child: [
-            {
-              title: "美食",
-              child: ["代金券", "甜点饮品", "火锅", "自助餐", "小吃快餐"]
-            }
-          ]
-        },
-        {
-          type: "takeout",
-          name: "外卖",
-          child: [
-            {
-              title: "外卖",
-              child: ["美团外卖"]
-            }
-          ]
-        },
-        {
-          type: "hotel",
-          name: "酒店",
-          child: [
-            {
-              title: "酒店星际",
-              child: ["经济型", "舒适/三星", "高档/四星", "豪华/五星"]
-            }
-          ]
-        }
-      ]
+      // menu: [
+      //   {
+      //     type: "food",
+      //     name: "美食",
+      //     child: [
+      //       {
+      //         title: "美食",
+      //         child: ["代金券", "甜点饮品", "火锅", "自助餐", "小吃快餐"]
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     type: "takeout",
+      //     name: "外卖",
+      //     child: [
+      //       {
+      //         title: "外卖",
+      //         child: ["美团外卖"]
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     type: "hotel",
+      //     name: "酒店",
+      //     child: [
+      //       {
+      //         title: "酒店星际",
+      //         child: ["经济型", "舒适/三星", "高档/四星", "豪华/五星"]
+      //       }
+      //     ]
+      //   }
+      // ]
     };
   },
   computed: {
+    ...mapState({
+      menu: state => state.menu
+    }),
     curdetail() {
       return this.menu.filter(item => {
         return item.type === this.kind;

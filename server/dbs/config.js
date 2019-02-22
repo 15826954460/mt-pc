@@ -40,7 +40,7 @@ const Email = {
     }
   },
   sign: "a3c9fe0782107295ee9f1709edd15218",
-  requestUrl: "http://cp-tools.cn"
+  requestUrl: "http://cp-tools.cn" // http://cp-tools.cn/geo/menu?sign=a3c9fe0782107295ee9f1709edd15218
 };
 module.exports = Email;
 // 624793604@qq.com

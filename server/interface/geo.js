@@ -9,13 +9,14 @@ let router = new Router({
 
 const sign = Config.sign; // 获取数据签名
 
+/** ---获取当前城市定位--- */
 router.get("/getPosition", async ctx => {
   // 获取省市
   let {
     status,
     data: { province, city }
-  } = await axios.get(`http://cp-tools.cn/geo/getPosition?sign=${sign}`);
-
+  } = await axios.get(`${Config.requestUrl}/geo/getPosition?sign=${sign}`);
+  // http://cp-tools.cn//geo/getPosition?sign=a3c9fe0782107295ee9f1709edd15218
   if (status === 200) {
     ctx.body = {
       province,
@@ -29,20 +30,22 @@ router.get("/getPosition", async ctx => {
   }
 });
 
+/** ---获取菜单--- */
 router.get("/menu", async ctx => {
-  // let {
-  //   status,
-  //   data: { menu }
-  // } = await axios.get(`${Config.requestUrl}/geo/menu?sign=${sign}`);
-  // if (status === 200) {
-  //   ctx.body = {
-  //     menu
-  //   };
-  // } else {
-  //   ctx.body = {
-  //     menu: []
-  //   };
-  // }
+  let {
+    status,
+    data: { menu }
+  } = await axios.get(`${Config.requestUrl}/geo/menu?sign=${sign}`);
+  // http://cp-tools.cn/geo/menu?sign=a3c9fe0782107295ee9f1709edd15218
+  if (status === 200) {
+    ctx.body = {
+      menu
+    };
+  } else {
+    ctx.body = {
+      menu: []
+    };
+  }
 });
 
 router.get("/province", async ctx => {
@@ -56,7 +59,6 @@ router.get("/province", async ctx => {
   //     }
   //   })
   // }
-
   // let {
   //   status,
   //   data: { province }

@@ -1,6 +1,6 @@
 const state = ()=>({
-  menu: [],
-  hotPlace: []
+  menu: [], // 菜单
+  hotPlace: [] // 热门城市
 })
 
 const mutations = {
