@@ -29,7 +29,8 @@ router.post("/signin", async (ctx, next) => {
           msg: "登录成功",
           user
         };
-        // return ctx.login(user); // 执行登录的动作
+        // 执行登录操作后才会有 权限的验证
+        return ctx.login(user); // 执行登录的动作
       } else {
         ctx.body = {
           code: 1, // 异常
@@ -195,14 +196,15 @@ router.get("/getUser", async ctx => {
   // 判断是否登录状态
   if (ctx.isAuthenticated()) {
     const { username, email } = ctx.session.passport.user;
+    // console.log(11111122222, username, email);
     ctx.body = {
       username: username,
-      email
+      email,
     };
   } else {
     ctx.body = {
       username: "",
-      email: ""
+      email: "",
     };
   }
 });
