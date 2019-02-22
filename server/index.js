@@ -75,7 +75,7 @@ async function start() {
   // 引用用户模块路由
   app.use(persons.routes()).use(persons.allowedMethods());
   app.use(geo.routes()).use(geo.allowedMethods());
-  // app.use(search.routes()).use(search.allowedMethods());
+  app.use(search.routes()).use(search.allowedMethods());
 
   /***************  以上部分为注释代码  ***************/
   // 路由必须放在该部分之前

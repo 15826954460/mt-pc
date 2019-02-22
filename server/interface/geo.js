@@ -16,7 +16,6 @@ router.get("/getPosition", async ctx => {
     status,
     data: { province, city }
   } = await axios.get(`${Config.requestUrl}/geo/getPosition?sign=${sign}`);
-  // http://cp-tools.cn//geo/getPosition?sign=a3c9fe0782107295ee9f1709edd15218
   if (status === 200) {
     ctx.body = {
       province,
@@ -36,7 +35,6 @@ router.get("/menu", async ctx => {
     status,
     data: { menu }
   } = await axios.get(`${Config.requestUrl}/geo/menu?sign=${sign}`);
-  // http://cp-tools.cn/geo/menu?sign=a3c9fe0782107295ee9f1709edd15218
   if (status === 200) {
     ctx.body = {
       menu
@@ -49,23 +47,26 @@ router.get("/menu", async ctx => {
 });
 
 router.get("/province", async ctx => {
-  // let province = await Province.find();
-  // console.log(province);
+  // 数据库中的部分数据
+  // let province = await Province.find(); // 查询数据
   // ctx.body = {
   //   province: province.map(item => {
   //     return {
   //       id: item.id,
   //       name: item.value[0]
-  //     }
+  //     };
   //   })
-  // }
-  // let {
-  //   status,
-  //   data: { province }
-  // } = await axios.get(`${Config.requestUrl}/geo/province?sign=${sign}`);
-  // ctx.body = {
-  //   province: status === 200 ? province : []
   // };
+
+  // 线上的数据(完整的)
+  let {
+    status,
+    data: { province }
+  } = await axios.get(`${Config.requestUrl}/geo/province?sign=${sign}`);
+
+  ctx.body = {
+    province: status === 200 ? province : []
+  };
 });
 
 router.get("/province/:id", async ctx => {});

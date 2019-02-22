@@ -10,4 +10,4 @@ const Province = new Schema({
     require: true
   }
 })
-module.exports = mongoose.model("Province", Province);
+module.exports = mongoose.model("provinces", Province);

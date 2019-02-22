@@ -38,4 +38,4 @@ const Poi = new Schema({
     type: Number
   }
 })
-module.exports = mongoose.model("Poi", Poi);
+module.exports = mongoose.model("pois", Poi);
