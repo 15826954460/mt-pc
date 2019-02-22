@@ -10,27 +10,27 @@ const router = new Router({
 const sign = Config.sign;
 
 router.get("/top", async ctx => {
-  // try {
-  //   let top = await Poi.find({
-  //     'name': new RegExp(ctx.query.input),
-  //     city: ctx.query.city
-  //   })
-  //   ctx.body = {
-  //     code: 0,
-  //     top: top.map(item => {
-  //       return {
-  //         name: item.name,
-  //         type: item.type
-  //       }
-  //     }),
-  //     type: top.length ? top[0].type : ''
-  //   }
-  // } catch (e) {
-  //   ctx.body = {
-  //     code: -1,
-  //     top: []
-  //   }
-  // }
+  try {
+    //   let top = await Poi.find({
+    //     'name': new RegExp(ctx.query.input),
+    //     city: ctx.query.city
+    //   })
+    //   ctx.body = {
+    //     code: 0,
+    //     top: top.map(item => {
+    //       return {
+    //         name: item.name,
+    //         type: item.type
+    //       }
+    //     }),
+    //     type: top.length ? top[0].type : ''
+    //   }
+  } catch (e) {
+    //   ctx.body = {
+    //     code: -1,
+    //     top: []
+    //   }
+  }
   let {
     status,
     data: { top }
@@ -46,8 +46,35 @@ router.get("/top", async ctx => {
   };
 });
 
+/** 热门模块 */
 router.get("/hotPlace", async ctx => {
   let city = ctx.store ? ctx.store.geo.position.city : ctx.query.city;
+  // 查找数据库中的数据
+  try {
+    //   let result = await Poi.find({
+    //     city,
+    //     type: ctx.query.type || '景点'
+    //   }).limit(10)
+    //
+    //   ctx.body = {
+    //     code: 0,
+    //     result: result.map(item => {
+    //       return {
+    //         name: item.name,
+    //         type: item.type
+    //       }
+    //     })
+    //   }
+  } catch (e) {
+    //   ctx.body = {
+    //     code: -1,
+    //     result: []
+    //   }
+  }
+  /**
+   * vuex 为服务端和客户端共享的状态，可以通过ctx上下环境来获取
+   * 如果客户端有就直接从客户端取，否则从查询参数中获取
+   */
   let {
     status,
     data: { result }
@@ -62,6 +89,7 @@ router.get("/hotPlace", async ctx => {
   };
 });
 
+/** 根据关键字进行检索 */
 router.get("/resultsByKeywords", async ctx => {
   const { city, keyword } = ctx.query;
   let {
@@ -69,7 +97,7 @@ router.get("/resultsByKeywords", async ctx => {
     data: { count, pois }
   } = await axios.get(`${Config.requestUrl}/search/resultsByKeywords`, {
     params: {
-      city,
+      city: city,
       keyword,
       sign
     }

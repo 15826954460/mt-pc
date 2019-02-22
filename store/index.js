@@ -17,8 +17,9 @@ const store = () =>
       /**
        * nuxtServerInit 用法参见 https://zh.nuxtjs.org/guide/vuex-store
        * vue SSR 相关参考 https://juejin.im/post/5b72d3d7518825613c02abd6
+       * app 为页面的上下文 server/index.js   app = new koa()
        */
-      async nuxtServerInit({ commit }, { req, app }) {
+      async nuxtServerInit({ commit }, { app }) {
         // 获取城市定位
         const {
           status,
@@ -36,15 +37,15 @@ const store = () =>
         commit("home/setMenu", status2 === 200 ? menu : []);
 
         // 获取热门城市
-      //   const {
-      //     status,
-      //     data: { result }
-      //   } = await axios.get("/search/hotPlace", {
-      //     params: {
-      //       city: app.store.state.geo.position.city.replace("市", "")
-      //     }
-      //   });
-      //   commit("search/setHotPlace", status === 200 ? result : []);
+        const {
+          status: status3,
+          data: { result }
+        } = await axios.get("/search/hotPlace", {
+          params: {
+            city: app.store.state.geo.position.city.replace("市", "")
+          }
+        });
+        commit("search/setHotPlace", status3 === 200 ? result : []);
       }
     }
   });

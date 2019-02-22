@@ -4,7 +4,6 @@
       <el-col :span="3" class="left">
         <img src="//s0.meituan.net/bs/fe-web-meituan/e5eeaef/img/logo.png" alt="美团">
       </el-col>
-      <span>{{position.city}}</span>
       <el-col :span="15" class="center">
         <div class="wrapper">
           <el-input
@@ -19,19 +18,18 @@
           </button>
           <dl v-if="isHotPlace" class="hotPlace">
             <dt>热门搜索</dt>
-            <!-- $store.state.search.hotPlace.slice(0, 5) -->
-            <dd v-for="(item, index) in hotPlace" :key="index">{{ item }}</dd>
+            <dd v-for="(item, index) in hotPlace" :key="index">{{ item.name }}</dd>
           </dl>
           <dl v-if="isSearchList" class="searchList">
             <dd v-for="(item,index) in searchList" :key="index">{{ item.name}}</dd>
           </dl>
         </div>
         <p class="suggest">
-          <!-- <a
-            v-for="(item, index) in $store.state.search.hotPlace.slice(0, 5)"
+          <a
+            v-for="(item, index) in hotPlace"
             :key="index"
             href="#"
-          >{{ item.name }}</a>-->
+          >{{ item.name }}</a>
         </p>
         <ul class="nav">
           <li>
@@ -74,7 +72,8 @@
 <script>
 import _ from "lodash"; // 参考 https://www.lodashjs.com/docs/4.17.5.html
 import { createNamespacedHelpers } from "vuex";
-const { mapState } = createNamespacedHelpers("geo");
+const { mapState: mapState1 } = createNamespacedHelpers("geo");
+const { mapState: mapState2 } = createNamespacedHelpers("search");
 const axios = require("../../../server/interface/utils/axios");
 
 export default {
@@ -82,13 +81,16 @@ export default {
     return {
       search: "", //当前输入框的值
       isFocus: false, //是否聚焦
-      hotPlace: ["火锅", "火锅", "火锅", "火锅"], // 热门搜索数据
+      // hotPlace: ["火锅", "火锅", "火锅", "火锅"], // 热门
       searchList: [] // 搜索数据
     };
   },
   computed: {
-    ...mapState({
+    ...mapState1({
       position: state => state.position
+    }),
+    ...mapState2({
+      hotPlace: state => state.hotPlace.slice(0, 5)
     }),
     isHotPlace() {
       return this.isFocus && !this.search;
