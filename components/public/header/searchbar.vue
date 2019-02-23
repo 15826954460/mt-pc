@@ -18,18 +18,25 @@
           </button>
           <dl v-if="isHotPlace" class="hotPlace">
             <dt>热门搜索</dt>
-            <dd v-for="(item, index) in hotPlace" :key="index">{{ item.name }}</dd>
+            <dd v-for="(item, index) in hotPlace" :key="index">
+              <a :href="'/products?keyword='+encodeURIComponent(item.name)">{{ item.name }}</a>
+              <!-- {{ item.name }} -->
+            </dd>
           </dl>
           <dl v-if="isSearchList" class="searchList">
-            <dd v-for="(item,index) in searchList" :key="index">{{ item.name}}</dd>
+            <dd v-for="(item,index) in searchList" :key="index">
+              <a :href="'/products?keyword='+encodeURIComponent(item.name)">{{ item.name }}</a>
+              <!-- {{ item.name}} -->
+            </dd>
           </dl>
         </div>
         <p class="suggest">
           <a
-            v-for="(item, index) in hotPlace"
+            v-for="(item,index) in hotPlace"
             :key="index"
-            href="#"
+            :href="'/products?keyword='+encodeURIComponent(item.name)"
           >{{ item.name }}</a>
+          <!-- {{ item.name}} -->
         </p>
         <ul class="nav">
           <li>

@@ -37,24 +37,6 @@ export default {
       cities: []
     };
   },
-  watch: {
-    pvalue: async function(newPvalue) {
-      let self = this;
-      let {
-        status,
-        data: { city }
-      } = await axios.get(`/geo/province/${newPvalue}`);
-      if (status === 200) {
-        self.city = city.map(item => {
-          return {
-            value: item.id,
-            label: item.name
-          };
-        });
-        self.cvalue = "";
-      }
-    }
-  },
   // 初始化获取所有的省份
   mounted: async function() {
     let self = this;
@@ -94,12 +76,32 @@ export default {
         }
       }
     }, 200),
+    // 自行输入的确定选择框
     handleSelect: function(item) {
+      // 这里跳转页面无法进行数据跟新，服务端和客户端如何交换不是很懂，如何让服务端返回该部分的数据
       this.setPosition({ city: item.value });
       // 选中进行页面跳转
       window.location.href = "/";
     }
-  }
+  },
+  watch: {
+    pvalue: async function(newPvalue) {
+      let self = this;
+      let {
+        status,
+        data: { city }
+      } = await axios.get(`/geo/province/${newPvalue}`);
+      if (status === 200) {
+        self.city = city.map(item => {
+          return {
+            value: item.id,
+            label: item.name
+          };
+        });
+        self.cvalue = "";
+      }
+    }
+  },
 };
 </script>
 

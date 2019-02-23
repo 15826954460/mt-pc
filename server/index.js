@@ -15,6 +15,7 @@ const users = require("./interface/users"); // 引用模块的路由
 const persons = require("./interface/person");
 const geo = require("./interface/geo");
 const search = require("./interface/search");
+const categroy = require("./interface/categroy");
 
 /**************  以上部分为引入第三方包  **************/
 
@@ -76,7 +77,8 @@ async function start() {
   app.use(persons.routes()).use(persons.allowedMethods());
   app.use(geo.routes()).use(geo.allowedMethods());
   app.use(search.routes()).use(search.allowedMethods());
-
+  app.use(categroy.routes()).use(categroy.allowedMethods());
+  
   /***************  以上部分为注释代码  ***************/
   // 路由必须放在该部分之前
   app.use(ctx => {
