@@ -11,12 +11,15 @@ const Redis = require("koa-redis"); // 引用redis
 const json = require("koa-json"); // 处理服务端像客户端返回的json格式化
 const dbConfig = require("./dbs/config"); // 引用数据库相关配置
 const passport = require("./interface/utils/passport");
+
+/** 引入路由模块 */
 const users = require("./interface/users"); // 引用模块的路由
 const persons = require("./interface/person");
 const geo = require("./interface/geo");
 const search = require("./interface/search");
 const categroy = require("./interface/categroy");
 const cart = require("./interface/cart");
+const order = require("./interface/order");
 
 /**************  以上部分为引入第三方包  **************/
 
@@ -80,6 +83,7 @@ async function start() {
   app.use(search.routes()).use(search.allowedMethods());
   app.use(categroy.routes()).use(categroy.allowedMethods());
   app.use(cart.routes()).use(cart.allowedMethods());
+  app.use(order.routes()).use(order.allowedMethods());
   
   /***************  以上部分为注释代码  ***************/
   // 路由必须放在该部分之前
