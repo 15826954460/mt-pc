@@ -6,11 +6,11 @@
       <list :list="list"/>
     </el-col>
     <el-col :span="5">
-      <!-- <amap
+      <amap
         v-if="point.length"
         :width="230"
         :height="290"
-      :point="point"/>-->
+      :point="point"/>
     </el-col>
   </el-row>
 </template>
@@ -41,7 +41,7 @@ export default {
       point: []
     };
   },
-  // 通过SSR获取异步数据,改方法在服务端调用，无法获取this
+  // 通过SSR获取异步数据,改方法在服务端调用，无法获取this,但是 vuex 是在服务端和客户端共享的
   async asyncData(ctx) {
     let keyword = ctx.query.keyword;
     let city = ctx.store.state.geo.position.city;
