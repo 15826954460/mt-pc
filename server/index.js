@@ -16,6 +16,7 @@ const persons = require("./interface/person");
 const geo = require("./interface/geo");
 const search = require("./interface/search");
 const categroy = require("./interface/categroy");
+const cart = require("./interface/cart");
 
 /**************  以上部分为引入第三方包  **************/
 
@@ -78,6 +79,7 @@ async function start() {
   app.use(geo.routes()).use(geo.allowedMethods());
   app.use(search.routes()).use(search.allowedMethods());
   app.use(categroy.routes()).use(categroy.allowedMethods());
+  app.use(cart.routes()).use(cart.allowedMethods());
   
   /***************  以上部分为注释代码  ***************/
   // 路由必须放在该部分之前

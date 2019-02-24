@@ -91,7 +91,7 @@ router.get("/hotPlace", async ctx => {
 
 /** 根据关键字进行检索 */
 router.get("/resultsByKeywords", async ctx => {
-  const { city, keyword } = ctx.query;
+  const { city, keyword } = ctx.query; // 获取页面搜索的关键字
   let {
     status,
     data: { count, pois }
@@ -106,6 +106,35 @@ router.get("/resultsByKeywords", async ctx => {
     count: status === 200 ? count : 0,
     pois: status === 200 ? pois : []
   };
+});
+
+/** 获取获取商品详情列表：线上获取 */
+router.get("/products", async ctx => {
+  let keyword = ctx.query.keyword || "旅游";
+  let city = ctx.query.city || "北京";
+  let {
+    status,
+    data: { product, more }
+  } = await axios.get(`${Config.requestUrl}/search/products`, {
+    params: {
+      keyword,
+      city,
+      sign
+    }
+  });
+  if (status === 200) {
+    ctx.body = {
+      product,
+      more: ctx.isAuthenticated() ? more : [],
+      login: ctx.isAuthenticated()
+    };
+  } else {
+    ctx.body = {
+      product: {},
+      more: ctx.isAuthenticated() ? more : [],
+      login: ctx.isAuthenticated()
+    };
+  }
 });
 
 module.exports = router;

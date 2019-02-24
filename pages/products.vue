@@ -54,6 +54,7 @@ export default {
         city
       }
     });
+    
     let {
       status: status2,
       data: { areas, types }
