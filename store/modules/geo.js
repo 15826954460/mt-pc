@@ -1,5 +1,6 @@
 const state = ()=>({
-  posicdtion: {}
+  posicdtion: {},
+  position: ''
 })
 
 const mutations = {
